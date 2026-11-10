@@ -169,7 +169,9 @@ def main(argv: list[str] | None = None) -> int:
         from pathlib import Path
         context = Path(context).read_text(encoding="utf-8")
 
-    if settings.backend != "mock":
+    if settings.backend == "ollama":
+        print(f"Локальная модель {settings.ollama_model} через Ollama: бесплатно, но медленнее Claude.")
+    elif settings.backend != "mock":
         est = estimate(settings, documents=len(args.doc))
         print(f"Оценка стоимости: ${est.usd_low:.2f} – ${est.usd_high:.2f} (~{est.calls} вызовов)")
         if args.max_cost is not None and est.usd_high > args.max_cost:

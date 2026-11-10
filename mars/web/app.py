@@ -134,7 +134,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         s = base.model_copy(update={"max_rounds": max(1, min(rounds, 5))} if rounds else {})
         e = estimate(s, max(1, min(sub_questions, 10)), max(0, min(documents, s.max_documents)))
         return {"usd_low": round(e.usd_low, 2), "usd_high": round(e.usd_high, 2), "calls": e.calls,
-                "model": s.agent("analyst").model}
+                "model": s.ollama_model if s.backend == "ollama" else s.agent("analyst").model}
 
     @app.post("/api/runs")
     async def start_run(request: Request, question: str = Form(...), context: str = Form(""),

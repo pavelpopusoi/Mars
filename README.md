@@ -67,6 +67,19 @@ mars rebuild runs/<папка_запуска>
 
 Docker: `docker build -t mars . && docker run -e ANTHROPIC_API_KEY -v $PWD/runs:/app/runs mars run "вопрос"`
 
+## Бесплатно: локальная модель через Ollama
+
+Без ключа Anthropic MARS может работать на модели, запущенной у вас на компьютере.
+
+1. Установите [Ollama](https://ollama.com) и скачайте модель: `ollama pull qwen3:8b`
+   (нужно ~6 ГБ видеопамяти; на слабом ПК — `qwen3:4b`).
+2. В `config/mars.yaml` поставьте `backend: ollama` (или `MARS_BACKEND=ollama`).
+3. Запускайте как обычно: `mars run "вопрос"`.
+
+Веб-поиск в этом режиме бесплатный: DuckDuckGo и Википедия, плюс научные базы (OpenAlex, arXiv, PubMed).
+Модель сама читает скачанные страницы. Качество ниже, чем у Claude, а исследование идёт дольше
+(десятки минут вместо минут), зато ничего не стоит. Для PDF-файлов нужен `pip install pypdf`.
+
 ## Что получается на выходе
 
 Каждый запуск — папка `runs/<время>-<вопрос>/`:
@@ -111,7 +124,7 @@ mars serve --host 0.0.0.0    # без пользователей в сеть н�
 ## Конфигурация
 
 `config/mars.yaml` — модель, `effort` и `max_tokens` для каждого агента, число раундов, параллельность,
-лимит веб-поисков. Переменные окружения: `ANTHROPIC_API_KEY`, `MARS_CONFIG`, `MARS_BACKEND=mock`.
+лимит веб-поисков. Переменные окружения: `ANTHROPIC_API_KEY`, `MARS_CONFIG`, `MARS_BACKEND=mock|anthropic|ollama`.
 
 По умолчанию все агенты работают на `claude-fable-5-2` (самая сильная модель, $8 / $40 за 1M токенов).
 Включены:

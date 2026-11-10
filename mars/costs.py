@@ -80,6 +80,10 @@ def estimate(settings: Settings, sub_questions: int = 5, documents: int = 0) -> 
         searches = (sub_questions + rounds - 1) * settings.max_web_searches_per_question
         return calls, inp, out, usd, searches
 
+    if settings.backend == "ollama":  # локальная модель — бесплатно
+        _, _, _, _, s = run_cost(settings.max_rounds)
+        return Estimate(calls=run_cost(settings.max_rounds)[0], input_tokens=0, output_tokens=0, web_searches=s,
+                        usd_low=0.0, usd_high=0.0)
     lo = run_cost(1)
     hi = run_cost(settings.max_rounds)
     return Estimate(calls=hi[0], input_tokens=hi[1], output_tokens=hi[2], web_searches=hi[4],
