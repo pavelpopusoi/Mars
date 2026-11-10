@@ -18,14 +18,14 @@ class Searcher(Agent):
 
     async def run(self, sq: SubQuestion, extra_queries: list[str] | None = None) -> SearchFindings:
         queries = sq.search_queries + (extra_queries or [])
-        # Шаг 1: веб-поиск (серверные инструменты Claude)
+        # Шаг 1: веб-поиск (у Claude — серверный, у локальной модели — DuckDuckGo + Википедия)
         started = time.monotonic()
         research_prompt = (
             f"Подвопрос {sq.id}: {sq.question}\nЗачем: {sq.rationale}\n"
             f"Поисковые запросы: {queries}\n"
             "Найди и прочитай лучшие источники. Перечисли ключевые факты с цифрами и ссылками."
         )
-        web = await self.llm.web_research(self.name, self.system, research_prompt)
+        web = await self.llm.web_research(self.name, self.system, research_prompt, queries=queries)
         self._trace(research_prompt, {"text": web.text[:4000], "sources": web.sources}, started)
 
         # Шаг 1б: научные базы (обычные HTTP-запросы, ссылки гарантированно настоящие)

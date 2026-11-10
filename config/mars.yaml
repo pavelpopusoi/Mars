@@ -1,5 +1,13 @@
-# Конфиг MARS. Переопределение: MARS_CONFIG=путь, MARS_BACKEND=mock|anthropic
-backend: anthropic          # mock — офлайн без ключа
+# Конфиг MARS. Переопределение: MARS_CONFIG=путь, MARS_BACKEND=mock|anthropic|ollama
+backend: ollama             # anthropic — Claude (платный ключ); ollama — бесплатная локальная модель; mock — демо
+
+# Локальная модель (backend: ollama). Нужна программа Ollama: https://ollama.com
+ollama_url: http://localhost:11434
+ollama_model: qwen3:8b       # для 8 ГБ видеопамяти; слабее ПК — qwen3:4b
+ollama_num_ctx: 8192         # «окно» модели в токенах; 8192 целиком помещается в 8 ГБ видеопамяти, больше — медленно
+ollama_think: false          # true — модель «думает» перед ответом: лучше, но в разы дольше
+ollama_timeout: 900          # секунд на один ответ
+web_pages_to_read: 4         # сколько найденных страниц скачивать и читать (бесплатный поиск DuckDuckGo + Википедия)
 max_rounds: 2               # раундов «поиск → критика → доисследование»
 max_parallel_searches: 4    # одновременных Searcher-агентов
 max_web_searches_per_question: 5

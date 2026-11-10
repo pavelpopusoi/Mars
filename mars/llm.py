@@ -2,6 +2,7 @@
 
 * `ClaudeLLM`  — реальный бэкенд (Anthropic SDK, async, стриминг, structured outputs,
                  серверные web_search/web_fetch, серверные фолбэки при отказе модели).
+* `OllamaLLM`  — бесплатная локальная модель через Ollama + бесплатный веб-поиск.
 * `MockLLM`    — детерминированный офлайн-бэкенд для тестов и демо без API-ключа.
 """
 from __future__ import annotations
@@ -67,7 +68,8 @@ class LLM(Protocol):
     async def structured(self, agent: str, system: str, prompt: str, schema: type[T],
                          document: Path | None = None) -> T: ...
 
-    async def web_research(self, agent: str, system: str, prompt: str) -> WebResult: ...
+    async def web_research(self, agent: str, system: str, prompt: str,
+                           queries: list[str] | None = None) -> WebResult: ...
 
 
 # ---------------------------------------------------------------- Claude
@@ -153,7 +155,8 @@ class ClaudeLLM:
         except Exception as e:  # noqa: BLE001
             raise LLMError(f"{agent}: не удалось разобрать ответ как {schema.__name__}") from e
 
-    async def web_research(self, agent: str, system: str, prompt: str) -> WebResult:
+    async def web_research(self, agent: str, system: str, prompt: str,
+                           queries: list[str] | None = None) -> WebResult:
         cfg = self.settings.agent(agent)
         tools = [
             {"type": "web_search_20260209", "name": "web_search",
@@ -181,6 +184,132 @@ class ClaudeLLM:
         return WebResult(text="\n".join(texts), sources=[{"url": u, "title": t} for u, t in sources.items()])
 
 
+# ---------------------------------------------------------------- Ollama (локальная модель)
+class OllamaLLM:
+    """Бесплатная локальная модель через Ollama (http://localhost:11434).
+
+    Структурированный ответ — через `format` (JSON-схема), веб-поиск — DuckDuckGo + Википедия
+    (`mars.websearch`), после чего модель сама выбирает факты из скачанных страниц.
+    """
+
+    def __init__(self, settings: Settings):
+        import httpx
+
+        self._httpx = httpx
+        self.settings = settings
+        self.usage = Usage()
+        self.base = settings.ollama_url.rstrip("/")
+        # Локальная модель отвечает медленно: таймаут большой, а запросы идут по одному
+        self.client = httpx.AsyncClient(timeout=httpx.Timeout(settings.ollama_timeout, connect=10.0))
+        self._lock = asyncio.Semaphore(1)
+        self._think_supported = True
+
+    def model_for(self, agent: str) -> str:
+        m = self.settings.agent(agent).model
+        return self.settings.ollama_model if m.startswith("claude") else m
+
+    async def _chat(self, agent: str, system: str, user: str, fmt: dict | None = None) -> str:
+        cfg = self.settings.agent(agent)
+        ctx = self.settings.ollama_num_ctx
+        answer = min(cfg.max_tokens, ctx // 2)
+        # Ollama молча отрезает начало слишком длинного запроса. Режем сами — середину,
+        # чтобы сохранить и вопрос в начале, и инструкции в конце (~3 символа на токен).
+        budget = (ctx - answer) * 3 - len(system)
+        if len(user) > budget > 2000:
+            log.warning("%s: запрос длиннее окна модели, середина сокращена (%d → %d символов)",
+                        agent, len(user), budget)
+            head = budget // 3
+            user = user[:head] + "\n…[сокращено]…\n" + user[-(budget - head):]
+        body: dict[str, Any] = {
+            "model": self.model_for(agent),
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "stream": False,
+            "options": {"num_ctx": ctx, "temperature": 0.2, "num_predict": answer},
+        }
+        if fmt is not None:
+            body["format"] = fmt
+        if self._think_supported:
+            body["think"] = self.settings.ollama_think
+        async with self._lock:
+            try:
+                r = await self.client.post(f"{self.base}/api/chat", json=body)
+                if r.status_code == 400 and "think" in r.text and "think" in body:
+                    self._think_supported = False  # модель без режима рассуждений
+                    body.pop("think")
+                    r = await self.client.post(f"{self.base}/api/chat", json=body)
+            except self._httpx.ConnectError as e:
+                raise LLMError(f"Ollama не запущена ({self.base}). Запустите приложение Ollama.") from e
+            except self._httpx.TimeoutException as e:
+                raise LLMError(f"Локальная модель не ответила за {self.settings.ollama_timeout:.0f} с") from e
+        if r.status_code == 404:
+            raise LLMError(f"Модель {body['model']} не скачана. Выполните: ollama pull {body['model']}")
+        if r.status_code != 200:
+            raise LLMError(f"Ошибка Ollama {r.status_code}: {r.text[:300]}")
+        data = r.json()
+        self.usage.calls += 1
+        self.usage.input_tokens += data.get("prompt_eval_count", 0) or 0
+        self.usage.output_tokens += data.get("eval_count", 0) or 0
+        if data.get("done_reason") == "length":
+            log.warning("%s: ответ обрезан по длине", agent)
+        return (data.get("message") or {}).get("content", "")
+
+    @staticmethod
+    def _read_document(path: Path) -> str:
+        if path.suffix.lower() == ".pdf":
+            try:
+                from pypdf import PdfReader
+            except ImportError as e:
+                raise LLMError("Для PDF с локальной моделью установите: pip install pypdf") from e
+            return "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
+        return path.read_text(encoding="utf-8", errors="replace")
+
+    async def structured(self, agent: str, system: str, prompt: str, schema: type[T],
+                         document: Path | None = None) -> T:
+        if document is not None:
+            limit = int(self.settings.ollama_num_ctx * 1.5)  # ~3 символа на токен, остаток окна — под ответ
+            text = self._read_document(document)[:limit]
+            prompt = f"ДОКУМЕНТ «{document.name}»:\n<<<\n{text}\n>>>\n\n{prompt}"
+        system = (f"{system}\n\nОтвечай строго одним JSON-объектом по заданной схеме. "
+                  f"Тексты пиши на языке: {self.settings.language}.")
+        json_schema = schema.model_json_schema()
+        last_err = ""
+        for attempt in range(2):
+            user = prompt if not last_err else (
+                f"{prompt}\n\nПредыдущий ответ не прошёл проверку: {last_err[:500]}\nИсправь и верни корректный JSON.")
+            raw = await self._chat(agent, system, user, fmt=json_schema)
+            try:
+                return schema.model_validate_json(raw)
+            except Exception as e:  # noqa: BLE001
+                last_err = str(e)
+                log.warning("%s: ответ не по схеме %s (попытка %d)", agent, schema.__name__, attempt + 1)
+        raise LLMError(f"{agent}: локальная модель не смогла вернуть {schema.__name__}: {last_err[:200]}")
+
+    async def web_research(self, agent: str, system: str, prompt: str,
+                           queries: list[str] | None = None) -> WebResult:
+        import re
+
+        from .websearch import digest, fetch_url, web_search
+
+        urls = re.findall(r"https?://[^\s«»\"'<>]+", prompt)
+        if not queries and urls:  # просьба открыть конкретный источник (проверка утверждений судьёй)
+            pages = [await fetch_url(urls[0].rstrip(".,);"), max_chars=self.settings.ollama_num_ctx)]
+            pages = [p for p in pages if p.text]
+            if not pages:
+                return WebResult(text="Страница недоступна.", sources=[])
+        else:
+            queries = queries or [prompt[:200]]
+            pages = await web_search(queries, max_results=self.settings.max_web_searches_per_question,
+                                     fetch_top=self.settings.web_pages_to_read, language=self.settings.language)
+            self.usage.web_searches += len(queries[:4])
+        if not pages:
+            return WebResult(text="(веб-поиск ничего не нашёл или недоступен)", sources=[])
+        material = digest(pages)[: int(self.settings.ollama_num_ctx * 1.5)]
+        text = await self._chat(agent, system, (
+            f"{prompt}\n\nНИЖЕ — РЕЗУЛЬТАТЫ ВЕБ-ПОИСКА. Опирайся только на них, ничего не выдумывай.\n\n{material}\n\n"
+            "Выпиши ключевые факты с цифрами. После каждого факта укажи URL источника из списка выше."))
+        return WebResult(text=text, sources=[{"url": p.url, "title": p.title} for p in pages])
+
+
 # ---------------------------------------------------------------- Mock
 class MockLLM:
     """Возвращает правдоподобные детерминированные данные — пайплайн проверяется целиком без сети."""
@@ -189,7 +318,8 @@ class MockLLM:
         self.usage = Usage()
         self._round = 0
 
-    async def web_research(self, agent: str, system: str, prompt: str) -> WebResult:
+    async def web_research(self, agent: str, system: str, prompt: str,
+                           queries: list[str] | None = None) -> WebResult:
         self.usage.calls += 1
         await asyncio.sleep(0)
         return WebResult(
@@ -305,6 +435,8 @@ class MockLLM:
 def make_llm(settings: Settings) -> LLM:
     if settings.backend == "mock":
         return MockLLM(settings)
+    if settings.backend == "ollama":
+        return OllamaLLM(settings)
     return ClaudeLLM(settings)
 
 
