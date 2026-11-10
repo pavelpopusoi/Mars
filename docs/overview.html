@@ -1,0 +1,173 @@
+<title>MARS Research System</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<style>
+/* Layout: a lab-notebook page, one reading column with full-width pipeline and tables */
+:root {
+  --bg: #f5f6f4; --surface: #ffffff; --fg: #17201f; --muted: #5b6763; --line: #d9ddd8;
+  --accent: #0d6b62; --accent-soft: #e2f0ed; --warn: #a8501f; --warn-soft: #f7e9df;
+  --display: "Fraunces", Georgia, serif; --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121716; --surface: #1a2120; --fg: #e6ebe9; --muted: #9aa7a3; --line: #2c3533;
+  --accent: #4fc2b3; --accent-soft: #173330; --warn: #e48a5a; --warn-soft: #3a2519; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121716; --surface: #1a2120; --fg: #e6ebe9; --muted: #9aa7a3; --line: #2c3533;
+  --accent: #4fc2b3; --accent-soft: #173330; --warn: #e48a5a; --warn-soft: #3a2519; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--body); }
+.wrap { max-width: 960px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 48px; }
+h1, h2 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; }
+h2 { font-size: 1.6rem; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+header { display: flex; flex-direction: column; gap: 14px; }
+.lede { color: var(--muted); font-size: 1.1rem; }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+code, .mono { font-family: var(--mono); font-size: .9em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .95rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 12px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+td:first-child { font-weight: 600; white-space: nowrap; }
+.pipeline { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; counter-reset: s; }
+.steps li { counter-increment: s; border-top: 3px solid var(--accent); padding-top: 10px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.steps li::before { content: "Шаг " counter(s); font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.steps li.loop { border-top-color: var(--warn); }
+.steps b { font-size: 1.02rem; }
+.steps span { color: var(--muted); font-size: .92rem; }
+.note { background: var(--warn-soft); border-radius: 8px; padding: 12px 16px; font-size: .95rem; max-width: 65ch; }
+.note b { color: var(--warn); }
+pre.code { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; overflow-x: auto; margin: 0; font: 14px/1.6 var(--mono); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.grid2 > div { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+ul.plain { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+.pill { display: inline-block; font: 500 11px/1.6 var(--mono); padding: 0 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.pill.next { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+footer { color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Multi-Agent Research System · v0.3</div>
+    <h1>MARS: команда агентов, которая проводит исследование за вас</h1>
+    <p class="lede">На вход сложный вопрос из науки, техники, бизнеса или на стыке областей. На выход отчёт с источниками, разобранными противоречиями, проверяемыми гипотезами, графом знаний и полной записью шагов.</p>
+  </header>
+
+  <section>
+    <h2>Как идёт исследование</h2>
+    <div class="pipeline">
+      <ol class="steps">
+        <li><b>Planner</b><span>Разбивает вопрос на 3–6 подвопросов и поисковые запросы</span></li>
+        <li><b>Searcher × N и Reader</b><span>Параллельно ищут в вебе и читают ваши PDF и файлы, извлекают утверждения</span></li>
+        <li><b>Analyst</b><span>Синтезирует знания, оценивает силу доказательств</span></li>
+        <li class="loop"><b>Critic</b><span>Ищет противоречия и пробелы, при необходимости запускает новый раунд поиска</span></li>
+        <li><b>Hypothesis</b><span>Предлагает гипотезы с методом проверки и условием опровержения</span></li>
+        <li><b>Writer</b><span>Пишет отчёт со ссылками на источники, код добавляет граф и таблицы</span></li>
+      </ol>
+    </div>
+    <pre class="mermaid">
+graph LR
+  Q[Вопрос] --> P[Planner]
+  P --> S1[Searcher q1] & S2[Searcher qN]
+  D[/Ваши файлы/] --> RD[Reader]
+  S1 & S2 & RD --> A[Analyst]
+  A --> C{Critic}
+  C -- пробелы --> S4[Searcher: доисследование]
+  S4 --> A
+  C -- достаточно --> H[Hypothesis]
+  H --> G[(Граф знаний)]
+  G --> W[Writer]
+  W --> R[/report.md/]
+    </pre>
+    <p class="note"><b>Цикл критики</b> ограничен параметром <code>max_rounds</code> (по умолчанию 2), поэтому стоимость запуска предсказуема.</p>
+  </section>
+
+  <section>
+    <h2>Агенты и их контракты</h2>
+    <p>Агенты обмениваются только валидируемыми Pydantic-схемами, модель отвечает через structured outputs.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Агент</th><th>Делает</th><th>Выход</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>Planner</td><td>Декомпозиция, запросы, критерии успеха</td><td class="mono">ResearchPlan</td><td class="mono">high</td></tr>
+          <tr><td>Searcher</td><td>web_search + web_fetch, затем извлечение Source/Claim только по найденным URL</td><td class="mono">SearchFindings</td><td class="mono">medium</td></tr>
+          <tr><td>Reader</td><td>Читает ваши PDF, TXT, MD, CSV, JSON как источники</td><td class="mono">SearchFindings</td><td class="mono">medium</td></tr>
+          <tr><td>Analyst</td><td>Ключевые выводы, консенсус, открытые вопросы</td><td class="mono">Synthesis</td><td class="mono">high</td></tr>
+          <tr><td>Critic</td><td>Противоречия с причиной и разрешением, слабые утверждения, пробелы</td><td class="mono">Critique</td><td class="mono">high</td></tr>
+          <tr><td>Hypothesis</td><td>Новые фальсифицируемые гипотезы</td><td class="mono">HypothesisSet</td><td class="mono">high</td></tr>
+          <tr><td>Writer</td><td>Текст отчёта со ссылками [id]</td><td class="mono">ReportDraft</td><td class="mono">medium</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что остаётся после запуска</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Файл</th><th>Содержимое</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">report.md</td><td>Резюме, выводы, таблица противоречий, гипотезы, граф (Mermaid), источники с надёжностью, шаги</td></tr>
+          <tr><td class="mono">report.html</td><td>Тот же отчёт одним файлом с интерактивным графом знаний</td></tr>
+          <tr><td class="mono">meta.json</td><td>Раунды, расход токенов и фактическая стоимость в долларах</td></tr>
+          <tr><td class="mono">trace.jsonl</td><td>Каждый вызов агента: промпт, SHA-256, модель, effort, длительность, ответ</td></tr>
+          <tr><td class="mono">manifest.json</td><td>Версия, вопрос и полный конфиг запуска</td></tr>
+          <tr><td class="mono">graph.*</td><td>Граф знаний в JSON, Mermaid и GraphML (Gephi, yEd, Neo4j)</td></tr>
+          <tr><td class="mono">plan … draft.json</td><td>Артефакты каждого шага; <code>mars rebuild</code> пересобирает отчёт без модели</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="grid2">
+    <div>
+      <h2>Запуск</h2>
+<pre class="code">pip install -e ".[dev]"
+
+# демо без ключа
+mars run "Вопрос" --mock
+
+# реальный запуск со своими файлами
+export ANTHROPIC_API_KEY=sk-ant-...
+mars run "Вопрос" --doc report.pdf --max-cost 10
+
+mars estimate   # оценка стоимости
+mars serve      # веб-интерфейс</pre>
+    </div>
+    <div>
+      <h2>Решения</h2>
+      <ul class="plain">
+        <li>Оркестратор в коде: порядок шагов и стоимость предсказуемы</li>
+        <li>Утверждения как триплеты: граф строится без лишних вызовов модели</li>
+        <li>Упавший подвопрос пропускается, а не роняет весь запуск</li>
+        <li>Серверные фолбэки, если модель откажется отвечать</li>
+        <li>MockLLM: тесты и CI без сети и затрат</li>
+        <li>Оценка стоимости до запуска и лимит <code>--max-cost</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Дорожная карта</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Версия</th><th>Содержание</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>v0.1</td><td>6 агентов, цикл критики, граф, отчёт, трасса, mock, тесты, CI, Docker</td><td><span class="pill">готово</span></td></tr>
+          <tr><td>v0.2</td><td>Свои файлы как источники, кэширование промптов, оценка и учёт стоимости</td><td><span class="pill">готово</span></td></tr>
+          <tr><td>v0.3</td><td>Веб-интерфейс с прогрессом шагов, интерактивный граф в HTML-отчёте</td><td><span class="pill">готово</span></td></tr>
+          <tr><td>v0.4</td><td>Эталонные вопросы и автоматическая оценка качества отчётов</td><td><span class="pill next">далее</span></td></tr>
+          <tr><td>v0.5</td><td>Авторизация, очередь задач и хранение в БД для общего сервера</td><td><span class="pill next">далее</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Python 3.10+, Anthropic SDK, модель по умолчанию <span class="mono">claude-fable-5-2</span>. Модель и effort настраиваются для каждого агента в <span class="mono">config/mars.yaml</span>.</footer>
+</div>

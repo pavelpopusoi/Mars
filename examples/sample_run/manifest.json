@@ -1,0 +1,53 @@
+{
+  "mars_version": "0.3.0",
+  "question": "Как микропластик влияет на здоровье человека?",
+  "started_at": "2026-11-10T15:59:01.818854+00:00",
+  "settings": {
+    "backend": "mock",
+    "max_rounds": 2,
+    "max_parallel_searches": 4,
+    "max_web_searches_per_question": 5,
+    "use_server_fallbacks": true,
+    "prompt_caching": true,
+    "max_documents": 10,
+    "runs_dir": "runs",
+    "language": "ru",
+    "agents": {
+      "planner": {
+        "model": "claude-fable-5-2",
+        "effort": "high",
+        "max_tokens": 16000
+      },
+      "searcher": {
+        "model": "claude-fable-5-2",
+        "effort": "medium",
+        "max_tokens": 16000
+      },
+      "reader": {
+        "model": "claude-fable-5-2",
+        "effort": "medium",
+        "max_tokens": 16000
+      },
+      "analyst": {
+        "model": "claude-fable-5-2",
+        "effort": "high",
+        "max_tokens": 16000
+      },
+      "critic": {
+        "model": "claude-fable-5-2",
+        "effort": "high",
+        "max_tokens": 16000
+      },
+      "hypothesis": {
+        "model": "claude-fable-5-2",
+        "effort": "high",
+        "max_tokens": 16000
+      },
+      "writer": {
+        "model": "claude-fable-5-2",
+        "effort": "medium",
+        "max_tokens": 64000
+      }
+    }
+  }
+}

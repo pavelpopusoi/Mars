@@ -1,0 +1,16 @@
+{
+  "hypotheses": [
+    {
+      "id": "h1",
+      "statement": "Эффект A на B проявляется только при условии C",
+      "supporting_claim_ids": [
+        "q1-c1",
+        "q1-c2"
+      ],
+      "novelty": 0.6,
+      "plausibility": 0.7,
+      "test_method": "Стратифицированный анализ по C на открытых данных",
+      "falsifiable_by": "Одинаковый эффект при наличии и отсутствии C"
+    }
+  ]
+}

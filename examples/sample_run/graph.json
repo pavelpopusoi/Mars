@@ -1,0 +1,61 @@
+{
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Фактор A",
+      "kind": "entity",
+      "degree": 4
+    },
+    {
+      "id": "n2",
+      "label": "Показатель B",
+      "kind": "entity",
+      "degree": 3
+    },
+    {
+      "id": "n3",
+      "label": "h1: Эффект A на B проявляется только при условии C",
+      "kind": "hypothesis",
+      "degree": 1
+    }
+  ],
+  "edges": [
+    {
+      "source": "n1",
+      "target": "n2",
+      "label": "увеличивает",
+      "claim_id": "d1-c1, q1-c1, q2-c1, r2-c1",
+      "confidence": 0.8,
+      "sources": [
+        "d1-s1"
+      ],
+      "weight": 4
+    },
+    {
+      "source": "n1",
+      "target": "n2",
+      "label": "не влияет на",
+      "claim_id": "d1-c2, q1-c2, q2-c2, r2-c2",
+      "confidence": 0.5,
+      "sources": [
+        "d1-s2"
+      ],
+      "weight": 4
+    },
+    {
+      "source": "n1",
+      "target": "n2",
+      "label": "противоречие",
+      "contradiction_id": "x1",
+      "style": "conflict"
+    },
+    {
+      "source": "n3",
+      "target": "n1",
+      "label": "опирается на",
+      "hypothesis_id": "h1",
+      "style": "hypothesis",
+      "weight": 2
+    }
+  ]
+}

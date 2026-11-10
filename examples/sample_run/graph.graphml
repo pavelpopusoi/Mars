@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+<key id="label" for="all" attr.name="label" attr.type="string"/>
+<key id="kind" for="node" attr.name="kind" attr.type="string"/>
+<graph edgedefault="directed">
+<node id="n1"><data key="label">Фактор A</data><data key="kind">entity</data></node>
+<node id="n2"><data key="label">Показатель B</data><data key="kind">entity</data></node>
+<node id="n3"><data key="label">h1: Эффект A на B проявляется только при условии C</data><data key="kind">hypothesis</data></node>
+<edge id="e0" source="n1" target="n2"><data key="label">увеличивает</data></edge>
+<edge id="e1" source="n1" target="n2"><data key="label">не влияет на</data></edge>
+<edge id="e2" source="n1" target="n2"><data key="label">противоречие</data></edge>
+<edge id="e3" source="n3" target="n1"><data key="label">опирается на</data></edge>
+</graph>
+</graphml>

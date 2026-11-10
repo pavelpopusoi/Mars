@@ -1,0 +1,202 @@
+[
+  {
+    "sub_question_id": "d1",
+    "summary": "Сводка по d1",
+    "sources": [
+      {
+        "id": "d1-s1",
+        "title": "questions.md",
+        "url": "file://questions.md",
+        "publisher": "Journal X",
+        "year": 2025,
+        "source_type": "user_document",
+        "reliability": 0.85
+      },
+      {
+        "id": "d1-s2",
+        "title": "questions.md",
+        "url": "file://questions.md",
+        "publisher": "Agency Y",
+        "year": 2024,
+        "source_type": "user_document",
+        "reliability": 0.7
+      }
+    ],
+    "claims": [
+      {
+        "id": "d1-c1",
+        "sub_question_id": "d1",
+        "statement": "Фактор A увеличивает показатель B на 12%",
+        "source_ids": [
+          "d1-s1"
+        ],
+        "confidence": 0.8,
+        "subject": "Фактор A",
+        "predicate": "увеличивает",
+        "object": "Показатель B"
+      },
+      {
+        "id": "d1-c2",
+        "sub_question_id": "d1",
+        "statement": "Фактор A не влияет на показатель B",
+        "source_ids": [
+          "d1-s2"
+        ],
+        "confidence": 0.5,
+        "subject": "Фактор A",
+        "predicate": "не влияет на",
+        "object": "Показатель B"
+      }
+    ]
+  },
+  {
+    "sub_question_id": "q1",
+    "summary": "Сводка по q1",
+    "sources": [
+      {
+        "id": "q1-s1",
+        "title": "Study A",
+        "url": "https://example.org/study-a",
+        "publisher": "Journal X",
+        "year": 2025,
+        "source_type": "peer_reviewed",
+        "reliability": 0.85
+      },
+      {
+        "id": "q1-s2",
+        "title": "Report B",
+        "url": "https://example.org/report-b",
+        "publisher": "Agency Y",
+        "year": 2024,
+        "source_type": "official",
+        "reliability": 0.7
+      }
+    ],
+    "claims": [
+      {
+        "id": "q1-c1",
+        "sub_question_id": "q1",
+        "statement": "Фактор A увеличивает показатель B на 12%",
+        "source_ids": [
+          "q1-s1"
+        ],
+        "confidence": 0.8,
+        "subject": "Фактор A",
+        "predicate": "увеличивает",
+        "object": "Показатель B"
+      },
+      {
+        "id": "q1-c2",
+        "sub_question_id": "q1",
+        "statement": "Фактор A не влияет на показатель B",
+        "source_ids": [
+          "q1-s2"
+        ],
+        "confidence": 0.5,
+        "subject": "Фактор A",
+        "predicate": "не влияет на",
+        "object": "Показатель B"
+      }
+    ]
+  },
+  {
+    "sub_question_id": "q2",
+    "summary": "Сводка по q2",
+    "sources": [
+      {
+        "id": "q2-s1",
+        "title": "Study A",
+        "url": "https://example.org/study-a",
+        "publisher": "Journal X",
+        "year": 2025,
+        "source_type": "peer_reviewed",
+        "reliability": 0.85
+      },
+      {
+        "id": "q2-s2",
+        "title": "Report B",
+        "url": "https://example.org/report-b",
+        "publisher": "Agency Y",
+        "year": 2024,
+        "source_type": "official",
+        "reliability": 0.7
+      }
+    ],
+    "claims": [
+      {
+        "id": "q2-c1",
+        "sub_question_id": "q2",
+        "statement": "Фактор A увеличивает показатель B на 12%",
+        "source_ids": [
+          "q2-s1"
+        ],
+        "confidence": 0.8,
+        "subject": "Фактор A",
+        "predicate": "увеличивает",
+        "object": "Показатель B"
+      },
+      {
+        "id": "q2-c2",
+        "sub_question_id": "q2",
+        "statement": "Фактор A не влияет на показатель B",
+        "source_ids": [
+          "q2-s2"
+        ],
+        "confidence": 0.5,
+        "subject": "Фактор A",
+        "predicate": "не влияет на",
+        "object": "Показатель B"
+      }
+    ]
+  },
+  {
+    "sub_question_id": "r2",
+    "summary": "Сводка по r2",
+    "sources": [
+      {
+        "id": "r2-s1",
+        "title": "Study A",
+        "url": "https://example.org/study-a",
+        "publisher": "Journal X",
+        "year": 2025,
+        "source_type": "peer_reviewed",
+        "reliability": 0.85
+      },
+      {
+        "id": "r2-s2",
+        "title": "Report B",
+        "url": "https://example.org/report-b",
+        "publisher": "Agency Y",
+        "year": 2024,
+        "source_type": "official",
+        "reliability": 0.7
+      }
+    ],
+    "claims": [
+      {
+        "id": "r2-c1",
+        "sub_question_id": "r2",
+        "statement": "Фактор A увеличивает показатель B на 12%",
+        "source_ids": [
+          "r2-s1"
+        ],
+        "confidence": 0.8,
+        "subject": "Фактор A",
+        "predicate": "увеличивает",
+        "object": "Показатель B"
+      },
+      {
+        "id": "r2-c2",
+        "sub_question_id": "r2",
+        "statement": "Фактор A не влияет на показатель B",
+        "source_ids": [
+          "r2-s2"
+        ],
+        "confidence": 0.5,
+        "subject": "Фактор A",
+        "predicate": "не влияет на",
+        "object": "Показатель B"
+      }
+    ]
+  }
+]
