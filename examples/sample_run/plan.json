@@ -1,0 +1,29 @@
+{
+  "main_question": "Как микропластик влияет на здоровье человека?",
+  "interpretation": "Демонстрационный план (mock).",
+  "sub_questions": [
+    {
+      "id": "q1",
+      "question": "Каково текущее состояние знаний?",
+      "rationale": "База",
+      "search_queries": [
+        "state of the art",
+        "review 2026"
+      ],
+      "domain": "science"
+    },
+    {
+      "id": "q2",
+      "question": "Какие есть экономические последствия?",
+      "rationale": "Эффект",
+      "search_queries": [
+        "economic impact"
+      ],
+      "domain": "business"
+    }
+  ],
+  "success_criteria": [
+    "Есть ответ на каждый подвопрос",
+    "Противоречия разобраны"
+  ]
+}

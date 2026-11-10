@@ -1,0 +1,21 @@
+{
+  "contradictions": [
+    {
+      "id": "x1",
+      "claim_ids": [
+        "q1-c1",
+        "q1-c2"
+      ],
+      "description": "Источники расходятся во влиянии A на B",
+      "likely_cause": "methodology",
+      "resolution": "Рецензируемое исследование с контрольной группой весомее отчёта",
+      "severity": "medium"
+    }
+  ],
+  "weak_claim_ids": [
+    "q1-c2"
+  ],
+  "gaps": [],
+  "follow_up_queries": [],
+  "needs_another_round": false
+}

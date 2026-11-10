@@ -1,0 +1,12 @@
+{
+  "key_findings": [
+    "Фактор A, вероятно, влияет на B"
+  ],
+  "consensus_points": [
+    "B растёт"
+  ],
+  "open_questions": [
+    "Размер эффекта"
+  ],
+  "evidence_strength": "moderate"
+}

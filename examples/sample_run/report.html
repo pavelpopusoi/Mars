@@ -1,0 +1,302 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Демонстрационный отчёт MARS</title><style>
+:root{--bg:#f5f6f4;--surface:#fff;--fg:#17201f;--muted:#5b6763;--line:#d9ddd8;--accent:#0d6b62;
+--warn:#a8501f;--hyp:#6a4fb3}
+@media (prefers-color-scheme:dark){:root{--bg:#121716;--surface:#1a2120;--fg:#e6ebe9;--muted:#9aa7a3;
+--line:#2c3533;--accent:#4fc2b3;--warn:#e48a5a;--hyp:#a996e8;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2rem;line-height:1.15}h2{margin-top:2.2em;padding-top:.6em;border-top:1px solid var(--line)}
+a{color:var(--accent)}blockquote{margin:0;padding:10px 16px;background:var(--surface);
+border-left:3px solid var(--accent);border-radius:4px}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}code{background:var(--surface);padding:1px 5px;border-radius:4px}
+#graph{background:var(--surface);border:1px solid var(--line);border-radius:10px;width:100%;height:520px;
+touch-action:none;cursor:grab}
+#graph text{font:12px system-ui,sans-serif;fill:var(--fg);pointer-events:none}
+#graph .edge{stroke:var(--muted);stroke-width:1.4;fill:none;opacity:.75}
+#graph .edge.conflict{stroke:var(--warn);stroke-dasharray:5 4;stroke-width:2}
+#graph .edge.hypothesis{stroke:var(--hyp);stroke-dasharray:2 4}
+#graph .elabel{font-size:10.5px;fill:var(--muted)}
+#graph .dim{opacity:.12}
+.legend{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:.88rem;margin:8px 0}
+.legend i{display:inline-block;width:22px;border-top:2px solid var(--muted);vertical-align:middle;margin-right:6px}
+.legend i.c{border-top:2px dashed var(--warn)}.legend i.h{border-top:2px dotted var(--hyp)}
+#info{min-height:1.6em;color:var(--muted);font-size:.9rem}
+</style></head><body><main><h1>Демонстрационный отчёт MARS</h1>
+<blockquote>
+<p><strong>Вопрос:</strong> Как микропластик влияет на здоровье человека?</p>
+<p>Запуск <code>20261110-155901-как-микропластик-влияет-на-здоровье-чело</code> · раундов: 2 · источников: 8 · утверждений: 8 · сила доказательств: <strong>moderate</strong></p>
+</blockquote>
+<h2>Резюме</h2>
+<p>Фактор A, вероятно, влияет на B, но данные противоречивы [q1-s1][q1-s2].</p>
+<h2>Ключевые выводы</h2>
+<ul>
+<li>Фактор A, вероятно, влияет на B</li>
+</ul>
+<h2>Основные выводы</h2>
+<p>Рецензируемые данные показывают рост B на 12% [q1-s1].</p>
+<h2>Противоречия</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Утверждения</th>
+<th>Суть</th>
+<th>Причина</th>
+<th>Разрешение</th>
+<th>Важность</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x1</td>
+<td>q1-c1, q1-c2</td>
+<td>Источники расходятся во влиянии A на B</td>
+<td>methodology</td>
+<td>Рецензируемое исследование с контрольной группой весомее отчёта</td>
+<td>medium</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Гипотезы</h2>
+<h3>h1. Эффект A на B проявляется только при условии C</h3>
+<ul>
+<li>Новизна: 0.60 · Правдоподобие: 0.70</li>
+<li>Опора: q1-c1, q1-c2</li>
+<li>Как проверить: Стратифицированный анализ по C на открытых данных</li>
+<li>Опровергается, если: Одинаковый эффект при наличии и отсутствии C</li>
+</ul>
+<h2>Граф знаний</h2>
+<svg id="graph" role="img" aria-label="Граф знаний"></svg><div class="legend"><span><i></i>утверждение</span><span><i class="c"></i>противоречие</span><span><i class="h"></i>опора гипотезы</span></div><div id="info"></div>
+<h2>Открытые вопросы и пробелы</h2>
+<ul>
+<li>Размер эффекта</li>
+</ul>
+<h2>Ограничения</h2>
+<ul>
+<li>Mock-режим: данные синтетические</li>
+</ul>
+<h2>Заключение</h2>
+<p>Нужна проверка гипотезы h1.</p>
+<h2>Источники</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>id</th>
+<th>Источник</th>
+<th>Тип</th>
+<th>Год</th>
+<th>Надёжность</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>d1-s1</td>
+<td><a href="file://questions.md">questions.md</a> — Journal X</td>
+<td>user_document</td>
+<td>2025</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td>d1-s2</td>
+<td><a href="file://questions.md">questions.md</a> — Agency Y</td>
+<td>user_document</td>
+<td>2024</td>
+<td>0.70</td>
+</tr>
+<tr>
+<td>q1-s1</td>
+<td><a href="https://example.org/study-a">Study A</a> — Journal X</td>
+<td>peer_reviewed</td>
+<td>2025</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td>q1-s2</td>
+<td><a href="https://example.org/report-b">Report B</a> — Agency Y</td>
+<td>official</td>
+<td>2024</td>
+<td>0.70</td>
+</tr>
+<tr>
+<td>q2-s1</td>
+<td><a href="https://example.org/study-a">Study A</a> — Journal X</td>
+<td>peer_reviewed</td>
+<td>2025</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td>q2-s2</td>
+<td><a href="https://example.org/report-b">Report B</a> — Agency Y</td>
+<td>official</td>
+<td>2024</td>
+<td>0.70</td>
+</tr>
+<tr>
+<td>r2-s1</td>
+<td><a href="https://example.org/study-a">Study A</a> — Journal X</td>
+<td>peer_reviewed</td>
+<td>2025</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td>r2-s2</td>
+<td><a href="https://example.org/report-b">Report B</a> — Agency Y</td>
+<td>official</td>
+<td>2024</td>
+<td>0.70</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Проверка качества</h2>
+<p>Автоматическая оценка: <strong>100/100</strong></p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Результат</th>
+<th>Детали</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ссылки в тексте существуют</td>
+<td>пройдена</td>
+<td>2 ссылок, все найдены</td>
+</tr>
+<tr>
+<td>В тексте есть ссылки на источники</td>
+<td>пройдена</td>
+<td>процитировано источников: 2 из 8</td>
+</tr>
+<tr>
+<td>У каждого утверждения есть источник</td>
+<td>пройдена</td>
+<td>8 утверждений</td>
+</tr>
+<tr>
+<td>У источников корректные адреса</td>
+<td>пройдена</td>
+<td>8 источников</td>
+</tr>
+<tr>
+<td>Все подвопросы покрыты</td>
+<td>пройдена</td>
+<td>2 подвопросов</td>
+</tr>
+<tr>
+<td>Противоречия ссылаются на утверждения</td>
+<td>пройдена</td>
+<td>1 противоречий</td>
+</tr>
+<tr>
+<td>Гипотезы опираются на утверждения</td>
+<td>пройдена</td>
+<td>1 гипотез</td>
+</tr>
+<tr>
+<td>Гипотезы проверяемы</td>
+<td>пройдена</td>
+<td>у каждой есть метод проверки и условие опровержения</td>
+</tr>
+<tr>
+<td>Источники из разных мест</td>
+<td>пройдена</td>
+<td>независимых сайтов и файлов: 2</td>
+</tr>
+<tr>
+<td>Есть надёжные источники</td>
+<td>пройдена</td>
+<td>с надёжностью от 0.7: 8 из 8</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Воспроизводимость</h2>
+<p>Все шаги записаны в папке запуска:</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Файл</th>
+<th>Что внутри</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>manifest.json</code></td>
+<td>версия MARS, вопрос, полный конфиг (модели, effort, лимиты)</td>
+</tr>
+<tr>
+<td><code>trace.jsonl</code></td>
+<td>каждый вызов агента: промпт, хэши, модель, длительность, ответ</td>
+</tr>
+<tr>
+<td><code>plan.json</code>, <code>findings.json</code>, <code>synthesis.json</code>, <code>critique.json</code>, <code>hypotheses.json</code></td>
+<td>артефакты шагов</td>
+</tr>
+<tr>
+<td><code>graph.json</code>, <code>graph.mmd</code>, <code>graph.graphml</code></td>
+<td>граф знаний</td>
+</tr>
+</tbody>
+</table></div>
+<p>Пересобрать отчёт без вызова модели: <code>mars rebuild runs/20261110-155901-как-микропластик-влияет-на-здоровье-чело</code></p>
+<p>Шаги пайплайна:</p>
+<ol>
+<li>Planner: 2 подвопросов</li>
+<li>Reader: документов прочитано — 1 из 1</li>
+<li>Searcher: раунд 1, утверждений: 6</li>
+<li>Analyst: раунд 1, сила доказательств — moderate</li>
+<li>Critic: раунд 1, противоречий — 1, пробелов — 1</li>
+<li>Searcher: раунд 2 (доисследование), всего утверждений: 8</li>
+<li>Analyst: раунд 2, сила доказательств — moderate</li>
+<li>Critic: раунд 2, противоречий — 1, пробелов — 0</li>
+<li>Hypothesis: 1 гипотез</li>
+<li>Knowledge graph: 3 узлов, 4 рёбер</li>
+<li>Writer: отчёт готов</li>
+<li>Проверка качества: 100/100</li>
+</ol></main><script>
+(function(){
+const G={"nodes": [{"id": "n1", "label": "Фактор A", "kind": "entity", "degree": 4}, {"id": "n2", "label": "Показатель B", "kind": "entity", "degree": 3}, {"id": "n3", "label": "h1: Эффект A на B проявляется только при условии C", "kind": "hypothesis", "degree": 1}], "edges": [{"source": "n1", "target": "n2", "label": "увеличивает", "claim_id": "d1-c1, q1-c1, q2-c1, r2-c1", "confidence": 0.8, "sources": ["d1-s1"], "weight": 4}, {"source": "n1", "target": "n2", "label": "не влияет на", "claim_id": "d1-c2, q1-c2, q2-c2, r2-c2", "confidence": 0.5, "sources": ["d1-s2"], "weight": 4}, {"source": "n1", "target": "n2", "label": "противоречие", "contradiction_id": "x1", "style": "conflict"}, {"source": "n3", "target": "n1", "label": "опирается на", "hypothesis_id": "h1", "style": "hypothesis", "weight": 2}]}, svg=document.getElementById('graph'), info=document.getElementById('info');
+const NS='http://www.w3.org/2000/svg', W=svg.clientWidth||900, H=520;
+svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const nodes=G.nodes.map((n,i)=>({...n,x:W/2+Math.cos(i*2.4)*(120+i*9),y:H/2+Math.sin(i*2.4)*(90+i*7),vx:0,vy:0}));
+const byId=Object.fromEntries(nodes.map(n=>[n.id,n]));
+const edges=G.edges.filter(e=>byId[e.source]&&byId[e.target]).map(e=>({...e,s:byId[e.source],t:byId[e.target]}));
+const pair={};edges.forEach(e=>{const k=[e.source,e.target].sort().join('|');e.k=(pair[k]=(pair[k]||0)+1)});
+const el=(t,a,p)=>{const x=document.createElementNS(NS,t);for(const k in a)x.setAttribute(k,a[k]);(p||svg).appendChild(x);return x};
+const defs=el('defs',{});const mk=el('marker',{id:'arr',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},defs);
+el('path',{d:'M0 0L10 5L0 10z',fill:css('--muted')},mk);
+edges.forEach(e=>{e.p=el('path',{class:'edge '+(e.style||''),'marker-end':'url(#arr)'});e.l=el('text',{class:'elabel','text-anchor':'middle'});e.l.textContent=e.label});
+nodes.forEach(n=>{n.r=n.kind==='hypothesis'?11:9+Math.min(8,n.degree||0);
+ n.c=el('circle',{r:n.r,fill:n.kind==='hypothesis'?css('--hyp'):css('--accent'),stroke:css('--surface'),'stroke-width':2,style:'cursor:pointer'});
+ n.tx=el('text',{'text-anchor':'middle'});n.tx.textContent=n.label.length>34?n.label.slice(0,33)+'…':n.label});
+function draw(){edges.forEach(e=>{const dx=e.t.x-e.s.x,dy=e.t.y-e.s.y,d=Math.hypot(dx,dy)||1,b=(e.k-1)*26+(e.k>1?10:0);
+ const mx=(e.s.x+e.t.x)/2-dy/d*b,my=(e.s.y+e.t.y)/2+dx/d*b;
+ const ex=e.t.x-dx/d*(e.t.r+3),ey=e.t.y-dy/d*(e.t.r+3);
+ e.p.setAttribute('d',`M${e.s.x} ${e.s.y}Q${mx} ${my} ${ex} ${ey}`);e.l.setAttribute('x',(e.s.x+2*mx+e.t.x)/4);e.l.setAttribute('y',(e.s.y+2*my+e.t.y)/4-3)});
+ nodes.forEach(n=>{n.c.setAttribute('cx',n.x);n.c.setAttribute('cy',n.y);n.tx.setAttribute('x',n.x);n.tx.setAttribute('y',n.y+n.r+14)})}
+let alpha=1,drag=null;
+function step(){for(const a of nodes){for(const b of nodes){if(a===b)continue;const dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy+60,f=5200/d2;a.vx+=dx/Math.sqrt(d2)*f*alpha;a.vy+=dy/Math.sqrt(d2)*f*alpha}
+ a.vx+=(W/2-a.x)*.012*alpha;a.vy+=(H/2-a.y)*.016*alpha}
+ for(const e of edges){const dx=e.t.x-e.s.x,dy=e.t.y-e.s.y,d=Math.hypot(dx,dy)||1,f=(d-170)*.03*alpha;e.s.vx+=dx/d*f;e.s.vy+=dy/d*f;e.t.vx-=dx/d*f;e.t.vy-=dy/d*f}
+ for(const n of nodes){if(n===drag)continue;n.vx*=.78;n.vy*=.78;n.x=Math.max(30,Math.min(W-30,n.x+n.vx));n.y=Math.max(24,Math.min(H-34,n.y+n.vy))}
+alpha*=.985}
+function tick(){step();draw();if(alpha>.02||drag)requestAnimationFrame(tick)}
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduce){for(let i=0;i<250;i++)step()}
+function pt(ev){const r=svg.getBoundingClientRect();return{x:(ev.clientX-r.left)*W/r.width,y:(ev.clientY-r.top)*H/r.height}}
+function focus(n){const near=new Set([n.id]);edges.forEach(e=>{if(e.s===n)near.add(e.t.id);if(e.t===n)near.add(e.s.id)});
+ nodes.forEach(m=>{const d=!near.has(m.id);m.c.classList.toggle('dim',d);m.tx.classList.toggle('dim',d)});
+ const mine=edges.filter(e=>e.s===n||e.t===n);edges.forEach(e=>{const d=!mine.includes(e);e.p.classList.toggle('dim',d);e.l.classList.toggle('dim',d)});
+ info.textContent=n.label+' — связей: '+mine.length+(mine.length?'. '+mine.slice(0,4).map(e=>e.s.label+' → '+e.label+' → '+e.t.label+(e.claim_id?' ('+e.claim_id+')':'')).join('; '):'')}
+function clear(){svg.querySelectorAll('.dim').forEach(x=>x.classList.remove('dim'));info.textContent='Наведите на узел или перетащите его.'}
+nodes.forEach(n=>{n.c.addEventListener('pointerdown',ev=>{drag=n;svg.setPointerCapture(ev.pointerId);focus(n);if(alpha<.05){alpha=.3;requestAnimationFrame(tick)}});
+ n.c.addEventListener('pointerenter',()=>{if(!drag)focus(n)});n.c.addEventListener('pointerleave',()=>{if(!drag)clear()})});
+svg.addEventListener('pointermove',ev=>{if(!drag)return;const p=pt(ev);drag.x=p.x;drag.y=p.y;drag.vx=drag.vy=0;alpha=Math.max(alpha,.3)});
+svg.addEventListener('pointerup',()=>{drag=null});
+clear();if(reduce)draw();else requestAnimationFrame(tick);
+})();
+</script></body></html>

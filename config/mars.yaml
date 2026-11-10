@@ -1,0 +1,19 @@
+# Конфиг MARS. Переопределение: MARS_CONFIG=путь, MARS_BACKEND=mock|anthropic
+backend: anthropic          # mock — офлайн без ключа
+max_rounds: 2               # раундов «поиск → критика → доисследование»
+max_parallel_searches: 4    # одновременных Searcher-агентов
+max_web_searches_per_question: 5
+prompt_caching: true         # автокэш повторяющегося контекста (дешевле повторные вызовы)
+max_documents: 10            # сколько своих файлов можно приложить к запуску
+use_server_fallbacks: true  # при отказе модели API сам переключится на подходящую модель
+runs_dir: runs
+language: ru
+
+agents:                     # model / effort (low|medium|high|xhigh|max) / max_tokens
+  planner:    {model: claude-fable-5-2, effort: high,   max_tokens: 16000}
+  searcher:   {model: claude-fable-5-2, effort: medium, max_tokens: 16000}
+  reader:     {model: claude-fable-5-2, effort: medium, max_tokens: 16000}
+  analyst:    {model: claude-fable-5-2, effort: high,   max_tokens: 16000}
+  critic:     {model: claude-fable-5-2, effort: high,   max_tokens: 16000}
+  hypothesis: {model: claude-fable-5-2, effort: high,   max_tokens: 16000}
+  writer:     {model: claude-fable-5-2, effort: medium, max_tokens: 64000}
