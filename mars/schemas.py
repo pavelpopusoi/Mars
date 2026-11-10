@@ -105,3 +105,22 @@ class ReportDraft(BaseModel):
     sections: list[ReportSection]
     conclusion: str
     limitations: list[str]
+
+
+# ---------- Оценка качества (судья) ----------
+class JudgeVerdict(BaseModel):
+    answers_question: int = Field(ge=1, le=5, description="Отвечает ли отчёт на главный вопрос")
+    evidence_support: int = Field(ge=1, le=5, description="Подтверждены ли выводы приведёнными утверждениями")
+    contradiction_handling: int = Field(ge=1, le=5, description="Честно ли разобраны противоречия и неопределённость")
+    hypothesis_quality: int = Field(ge=1, le=5, description="Новизна и проверяемость гипотез")
+    clarity: int = Field(ge=1, le=5, description="Структура и ясность текста")
+    strengths: list[str]
+    weaknesses: list[str]
+    unsupported_statements: list[str] = Field(description="Фразы отчёта, не подтверждённые утверждениями")
+    verdict: str = Field(description="Итог в 2-3 предложениях")
+
+
+class ClaimCheck(BaseModel):
+    claim_id: str
+    verdict: Literal["supported", "partially_supported", "not_supported", "source_unavailable"]
+    explanation: str

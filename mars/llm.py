@@ -280,6 +280,17 @@ class MockLLM:
             "test_method": "Стратифицированный анализ по C на открытых данных",
             "falsifiable_by": "Одинаковый эффект при наличии и отсутствии C"}]}
 
+    def _mock_JudgeVerdict(self, prompt: str) -> dict:
+        return {"answers_question": 4, "evidence_support": 3, "contradiction_handling": 4,
+                "hypothesis_quality": 3, "clarity": 4, "strengths": ["Противоречие разобрано явно"],
+                "weaknesses": ["Мало независимых источников"], "unsupported_statements": [],
+                "verdict": "Пригодно с оговорками (mock)."}
+
+    def _mock_ClaimCheck(self, prompt: str) -> dict:
+        cid = prompt.split("id=", 1)[-1].split(":", 1)[0].strip() if "id=" in prompt else "c1"
+        return {"claim_id": cid, "verdict": "supported" if cid.endswith("c1") else "partially_supported",
+                "explanation": "Источник содержит это утверждение (mock)."}
+
     def _mock_ReportDraft(self, prompt: str) -> dict:
         return {
             "title": "Демонстрационный отчёт MARS",
