@@ -1,5 +1,5 @@
 # Конфиг MARS. Переопределение: MARS_CONFIG=путь, MARS_BACKEND=mock|anthropic|ollama
-backend: anthropic          # anthropic — Claude (платный ключ); ollama — бесплатная локальная модель; mock — демо
+backend: ollama             # anthropic — Claude (платный ключ); ollama — бесплатная локальная модель; mock — демо
 
 # Локальная модель (backend: ollama). Нужна программа Ollama: https://ollama.com
 ollama_url: http://localhost:11434

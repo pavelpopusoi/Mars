@@ -92,7 +92,8 @@ def extract_text(raw_html: str, max_chars: int) -> str:
 
 async def fetch_page(client: httpx.AsyncClient, page: Page, max_chars: int) -> Page:
     try:
-        r = await client.get(page.url)
+        wiki = urlparse(page.url).netloc.endswith("wikipedia.org")
+        r = await client.get(page.url, headers={"User-Agent": WIKI_UA} if wiki else None)
         r.raise_for_status()
         ctype = r.headers.get("content-type", "")
         if "html" in ctype or "text/plain" in ctype:
