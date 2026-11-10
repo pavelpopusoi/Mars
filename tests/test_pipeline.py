@@ -119,3 +119,36 @@ async def test_quality_check_catches_broken_citations(tmp_path):
     failed = {c.name for c in bad.checks if not c.passed}
     assert {"Ссылки в тексте существуют", "У каждого утверждения есть источник"} <= failed
     assert bad.score < q.score
+
+
+async def test_judge_and_eval(tmp_path):
+    from mars.evals import judge_run, run_eval
+
+    settings = Settings(backend="mock", runs_dir=str(tmp_path / "runs"))
+    llm = MockLLM()
+    result = await Orchestrator(settings, llm=llm).run("Q")
+    judged = await judge_run(result.run_dir, settings, llm, verify_claims=3)
+    assert judged.score == 72 and len(judged.claim_checks) == 3
+    assert 0 < judged.claim_support <= 1
+    assert json.loads((result.run_dir / "judge.json").read_text())["score"] == 72
+
+    spec = tmp_path / "q.yaml"
+    spec.write_text("questions:\n  - {id: a, question: 'Влияет ли A на B?', must_mention: [фактор, марсианин]}\n",
+                    encoding="utf-8")
+    summary = await run_eval(spec, settings, tmp_path / "evals", llm=MockLLM(), on_event=lambda m: None)
+    row = summary["rows"][0]
+    assert summary["failed"] == 0 and row["coverage"] == 0.5 and row["missing"] == ["марсианин"]
+    assert "| a |" in (tmp_path / "evals" / "summary.md").read_text()
+
+
+def test_export_parses_report(tmp_path):
+    from mars.export import inline_parts, parse_markdown
+
+    md = "# T\n\n> **Q:** x\n\n- a\n- b\n\n| h1 | h2 |\n|---|---|\n| 1 | [t](http://u) |\n\n```mermaid\ngraph LR\n```\n"
+    graph = {"nodes": [{"id": "n1", "label": "A"}, {"id": "n2", "label": "B"}],
+             "edges": [{"source": "n1", "target": "n2", "label": "влияет", "claim_id": "c1"}]}
+    kinds = [b.kind for b in parse_markdown(md, graph)]
+    assert kinds == ["heading", "quote", "bullets", "table", "table"]
+    assert parse_markdown(md, graph)[-1].rows[1] == ["A", "влияет", "B", "c1"]
+    assert inline_parts("a **b** `c` [t](http://u)") == [("text", "a "), ("bold", "b"), ("text", " "),
+                                                         ("code", "c"), ("text", " "), ("link", "t (http://u)")]

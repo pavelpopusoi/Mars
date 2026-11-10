@@ -23,6 +23,7 @@
 | **Critic** | Находит противоречия, слабые утверждения, пробелы; решает, нужен ли ещё раунд | `Critique` |
 | **Hypothesis** | Генерирует проверяемые гипотезы с методом проверки и условием опровержения | `HypothesisSet` |
 | **Writer** | Пишет отчёт со ссылками `[id]` на источники | `ReportDraft` |
+| **Judge** | Независимо оценивает готовый отчёт и сверяет утверждения с первоисточниками (отдельные команды) | `JudgeVerdict` |
 
 Все обмены между агентами — валидируемые Pydantic-схемы (`mars/schemas.py`), модель отвечает через
 structured outputs, поэтому ответы всегда парсятся.
@@ -47,6 +48,15 @@ mars estimate --sub-questions 5 --docs 2
 
 # Проверить качество готового запуска без вызова модели (ссылки, источники, покрытие)
 mars check runs/<папка_запуска> --min-score 80
+
+# Оценка по содержанию: модель-судья, по желанию сверка N утверждений с первоисточниками
+mars judge runs/<папка_запуска> --verify-claims 5
+
+# Прогон набора эталонных вопросов, сводка в evals/summary.md
+mars eval examples/eval_questions.yaml --verify-claims 3
+
+# Экспорт отчёта в PDF и Word
+pip install -e ".[export]" && mars export runs/<папка_запуска>
 
 # Веб-интерфейс: форма, прогресс шагов, отчёт с графом — http://127.0.0.1:8000
 pip install -e ".[web]" && mars serve
@@ -73,6 +83,30 @@ Docker: `docker build -t mars . && docker run -e ANTHROPIC_API_KEY -v $PWD/runs:
 | `meta.json` | Раунды, шаги, расход токенов и стоимость в долларах |
 
 Пример готового прогона (mock): [`examples/sample_run/report.md`](examples/sample_run/report.md).
+
+## Источники
+
+Кроме веб-поиска Claude, Searcher опрашивает научные базы обычными HTTP-запросами без ключей:
+**OpenAlex**, **arXiv** и **PubMed**. Найденные статьи с аннотациями попадают в материал наравне с вебом,
+а их ссылки гарантированно настоящие. Список задаётся в `academic_sources`, пустой список отключает базы.
+Недоступная база пропускается с предупреждением в логе. OpenAlex и PubMed просят указывать e-mail для
+стабильного доступа: по умолчанию он не передаётся, при желании задайте `contact_email`.
+
+## Веб-сервер для нескольких человек
+
+```bash
+pip install -e ".[web]"
+mars user add pavel          # спросит пароль; как только есть пользователи, сервер требует вход
+mars serve --host 0.0.0.0    # без пользователей в сеть не откроется (кроме --no-auth)
+```
+
+* У каждого пользователя свои запуски и своя история, чужие отчёты недоступны.
+* Запуски идут через очередь: одновременно выполняется `max_concurrent_runs` (по умолчанию 2),
+  у одного пользователя не больше 3 задач в работе.
+* Пользователи, сессии и задачи хранятся в SQLite (`runs/mars.db`), пароли — в виде scrypt-хэшей.
+* 5 неверных паролей подряд блокируют вход для этого имени на 5 минут.
+* Сервер не шифрует соединение. Для доступа из интернета поставьте перед ним HTTPS-прокси (Caddy, nginx).
+* Без пользователей (`mars serve` на своём компьютере) всё работает как раньше, без входа.
 
 ## Конфигурация
 
@@ -107,16 +141,20 @@ print(result.report_path, len(result.critique.contradictions))
 mars/
   schemas.py          # контракты между агентами (Pydantic)
   llm.py              # ClaudeLLM (стриминг, structured outputs, web search, фолбэки) + MockLLM
-  agents/             # planner, searcher, reader, analyst, critic, hypothesis, writer
+  agents/             # planner, searcher, reader, analyst, critic, hypothesis, writer, judge
   orchestrator.py     # пайплайн и цикл раундов
   knowledge_graph.py  # граф знаний → JSON / Mermaid / GraphML
   report.py           # детерминированная сборка report.md
   report_html.py      # report.html с интерактивным графом
   quality.py          # автопроверка качества запуска
+  evals.py            # судья и прогон эталонных вопросов
+  export.py           # экспорт в PDF и Word
+  sources.py          # OpenAlex, arXiv, PubMed
   costs.py            # цены моделей, оценка и учёт стоимости
-  web/app.py          # веб-интерфейс (FastAPI + SSE)
+  web/app.py          # веб-интерфейс (FastAPI + SSE, вход, очередь)
+  web/store.py        # SQLite: пользователи, сессии, задачи
   provenance.py       # папка запуска, trace.jsonl
-  cli.py              # mars run / estimate / check / serve / rebuild
+  cli.py              # mars run / estimate / check / judge / eval / export / user / serve / rebuild
 config/mars.yaml
 docs/ARCHITECTURE.md
 tests/                # офлайн-тесты на MockLLM
@@ -126,7 +164,7 @@ examples/
 ## Тесты
 
 ```bash
-pytest -q        # 11 тестов, без сети
+pytest -q        # 20 тестов, без сети
 ruff check mars tests
 ```
 

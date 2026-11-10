@@ -5,8 +5,13 @@ max_parallel_searches: 4    # одновременных Searcher-агентов
 max_web_searches_per_question: 5
 prompt_caching: true         # автокэш повторяющегося контекста (дешевле повторные вызовы)
 max_documents: 10            # сколько своих файлов можно приложить к запуску
+academic_sources: [openalex, arxiv, pubmed]   # научные базы в дополнение к вебу; [] — отключить
+academic_results_per_source: 4
+contact_email: ""            # необязательно: OpenAlex и PubMed просят указывать e-mail для стабильного доступа
 use_server_fallbacks: true  # при отказе модели API сам переключится на подходящую модель
 runs_dir: runs
+db_path: ""                  # база веб-сервера (SQLite); пусто — <runs_dir>/mars.db
+max_concurrent_runs: 2       # сколько исследований веб-сервер выполняет одновременно, остальные ждут в очереди
 language: ru
 
 agents:                     # model / effort (low|medium|high|xhigh|max) / max_tokens
@@ -17,3 +22,4 @@ agents:                     # model / effort (low|medium|high|xhigh|max) / max_t
   critic:     {model: claude-fable-5-2, effort: high,   max_tokens: 16000}
   hypothesis: {model: claude-fable-5-2, effort: high,   max_tokens: 16000}
   writer:     {model: claude-fable-5-2, effort: medium, max_tokens: 64000}
+  judge:      {model: claude-fable-5-2, effort: high,   max_tokens: 16000}   # для `mars judge` и `mars eval`

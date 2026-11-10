@@ -22,7 +22,12 @@ class Settings(BaseModel):
     use_server_fallbacks: bool = True
     prompt_caching: bool = True
     max_documents: int = 10
+    academic_sources: list[str] = Field(default_factory=lambda: ["openalex", "arxiv", "pubmed"])
+    academic_results_per_source: int = 4
+    contact_email: str = Field(default="", description="Необязательно: e-mail для OpenAlex и PubMed")
     runs_dir: str = "runs"
+    db_path: str = Field(default="", description="SQLite веб-сервера; пусто — <runs_dir>/mars.db")
+    max_concurrent_runs: int = 2
     language: str = "ru"
     agents: dict[str, AgentConfig] = Field(default_factory=lambda: {
         "planner": AgentConfig(effort="high"),
@@ -32,7 +37,12 @@ class Settings(BaseModel):
         "critic": AgentConfig(effort="high"),
         "hypothesis": AgentConfig(effort="high"),
         "writer": AgentConfig(effort="medium", max_tokens=64000),
+        "judge": AgentConfig(effort="high"),
     })
+
+    @property
+    def database(self) -> str:
+        return self.db_path or str(Path(self.runs_dir) / "mars.db")
 
     def agent(self, name: str) -> AgentConfig:
         return self.agents.get(name, AgentConfig())
